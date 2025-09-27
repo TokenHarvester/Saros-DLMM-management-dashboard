@@ -21,7 +21,7 @@ A comprehensive portfolio management dashboard for Saros DLMM (Dynamic Liquidity
 
 **Demo URL**: [https://your-demo-url.com](https://your-demo-url.com)
 
-**GitHub Repository**: [https://github.com/your-username/saros-dlmm-dashboard](https://github.com/your-username/saros-dlmm-dashboard)
+**GitHub Repository**: [https://github.com/TokenHarvester/Saros-DLMM-management-dashboard]
 
 ## 💡 Key Features
 
@@ -107,7 +107,7 @@ const calculateMetrics = async (positions: Position[]) => {
 ### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/saros-dlmm-dashboard.git
+git clone https://github.com/TokenHarvester/Saros-DLMM-management-dashboard.git
 cd saros-dlmm-dashboard
 
 # Install dependencies
