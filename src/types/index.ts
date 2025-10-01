@@ -190,9 +190,9 @@ export interface WalletAdapter {
   disconnect: () => Promise<void>;
 }
 
-// SDK type declarations - single declaration
+// SDK type declarations
 declare module '@saros-finance/sdk' {
-  export class SarosSDK {
+  export default class SarosSDK {
     constructor(connection: any);
   }
 }

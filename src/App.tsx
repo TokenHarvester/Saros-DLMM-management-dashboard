@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletService } from './services/walletService';
-import { createSarosApiService } from './services/sarosApiService';
+import { createSarosApiService } from './services/sarosAPIService';
 import { SarosDLMMDashboard } from './components/SarosDLMMDashboard';
 import { WalletState, PortfolioData } from './types';
 import './App.css';
