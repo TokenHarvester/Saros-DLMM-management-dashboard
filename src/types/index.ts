@@ -21,7 +21,7 @@ export interface Position {
   lastRebalance: string;
   health: 'Excellent' | 'Good' | 'Fair' | 'Poor';
   
-  // Additional properties that the service expects
+  // Additional properties for Saros API compatibility
   totalLiquidity: number;
   fees24h: number;
   feesTotal: number;
@@ -30,19 +30,33 @@ export interface Position {
   priceRange: {
     min: number;
     max: number;
-    current: number;  // Make current required instead of optional
+    current: number;
   };
   binCount: number;
   binDistribution: BinDistribution[];
-  rawPosition?: any; // For SDK position data
+  rawPosition?: any;
+  
+  // Properties used in sarosApiService
+  pairName: string;
+  tokenX: string;
+  tokenY: string;
+  lowerBinId: number;
+  upperBinId: number;
+  unclaimedFees: number;
+  currentValue: number;
+  pnl: number;
+  pnlPercentage: number;
+  apr: number;
 }
 
 export interface BinDistribution {
   id: number;
+  binId: number;
   price: number;
   liquidityX: number;
   liquidityY: number;
   feeAPR: number;
+  percentage?: number;
 }
 
 export interface PerformanceDataPoint {
@@ -57,12 +71,20 @@ export interface PortfolioData {
   totalValueChange: number;
   totalFeesEarned: number;
   totalIL?: number;
+  totalPnL?: number;
+  totalPnLPercentage?: number;
   avgApy: number;
   positions: Position[];
   performanceData: PerformanceDataPoint[];
+  summary?: {
+    totalActivePositions: number;
+    totalUnclaimedFees: number;
+    averageAPR: number;
+  };
 }
 
 export interface RebalanceRecommendation {
+  id?: string;
   positionId: string;
   type: 'rebalance' | 'expand' | 'narrow' | 'exit';
   priority: 'high' | 'medium' | 'low';
@@ -83,13 +105,15 @@ export interface RebalanceRecommendation {
 export interface PriceRange {
   min: number;
   max: number;
+  lowerBinId?: number;
+  upperBinId?: number;
 }
 
 export interface WalletState {
   connected: boolean;
   publicKey: string | null;
   connecting: boolean;
-  error: string | null;
+  error?: string | null;
 }
 
 export interface MarketData {
@@ -132,9 +156,31 @@ export interface StrategySimulationResult {
     capitalEfficiency: number;
   };
   riskScore?: number;
+  risk?: number;
 }
 
-// Wallet adapter type (simplified)
+export type StrategyType = 'narrow' | 'wide' | 'balanced';
+
+export interface HistoricalPriceData {
+  timestamp: number;
+  price: number;
+  volume: number;
+  liquidity: number;
+}
+
+export interface ISarosService {
+  getPortfolioData(publicKey: any): Promise<PortfolioData>;
+  generateRebalanceRecommendations(positions: Position[]): Promise<RebalanceRecommendation[]>;
+  simulateStrategy(
+    position: Position,
+    strategy: StrategyType,
+    timeHorizon?: string,
+    marketConditions?: any
+  ): Promise<StrategySimulationResult>;
+  executeRebalance(recommendation: RebalanceRecommendation): Promise<string>;
+  getHistoricalData(pair: string, timeframe: string): Promise<HistoricalPriceData[]>;
+}
+
 export interface WalletAdapter {
   publicKey: any;
   connected: boolean;
@@ -144,21 +190,18 @@ export interface WalletAdapter {
   disconnect: () => Promise<void>;
 }
 
-// SDK type declarations - Fix export issues
+// SDK type declarations - single declaration
 declare module '@saros-finance/sdk' {
-  class SarosSDK {
+  export class SarosSDK {
     constructor(connection: any);
-    // Add other methods as they become available
   }
 }
 
 declare module '@saros-finance/dlmm-sdk' {
   export class LiquidityBookServices {
     constructor();
-    // Add DLMM methods as they become available
   }
   
-  // Other available exports based on the error message
   export const ACTIVE_ID: any;
   export const BASE_FACTOR: any;
   export const BASIS_POINT_MAX: any;
@@ -171,9 +214,7 @@ declare module '@saros-finance/dlmm-sdk' {
   export const DECAY_PERIOD: any;
   export const FILTER_PERIOD: any;
   export const FIXED_LENGTH: any;
-  export enum LiquidityShape {
-    // Add enum values as needed
-  }
+  export enum LiquidityShape {}
   export const MAX_BASIS_POINTS: any;
   export const MAX_VOLATILITY_ACCUMULATOR: any;
   export const MODE: any;
@@ -183,9 +224,7 @@ declare module '@saros-finance/dlmm-sdk' {
   export const REDUCTION_FACTOR: any;
   export const REWARDS_DURATION: any;
   export const REWARDS_PER_SECOND: any;
-  export enum RemoveLiquidityType {
-    // Add enum values as needed
-  }
+  export enum RemoveLiquidityType {}
   export const SCALE_OFFSET: any;
   export const START_TIME: any;
   export const UNIT_PRICE_DEFAULT: any;
