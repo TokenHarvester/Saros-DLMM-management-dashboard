@@ -1,6 +1,12 @@
 # Saros DLMM Portfolio Analytics Dashboard
 
-A comprehensive portfolio management dashboard for Saros DLMM (Dynamic Liquidity Market Maker) positions. This application demonstrates advanced usage of the Saros DLMM SDK with real-world features that liquidity providers need for effective position management.
+A portfolio management dashboard for Saros DLMM (Dynamic Liquidity Market Maker) positions built as part of the Saros SDK Demo Bounty. This application demonstrates understanding of DLMM concepts and provides a production-ready UI for position tracking and management.
+
+## 🚀 Live Demo
+
+**Demo URL**: [https://saros-dlmm-dashboard.vercel.app/]
+
+**GitHub Repository**: [https://github.com/TokenHarvester/Saros-DLMM-management-dashboard]
 
 ## 🏆 Features
 
@@ -16,12 +22,6 @@ A comprehensive portfolio management dashboard for Saros DLMM (Dynamic Liquidity
 - Secondary integration with `@saros-finance/sdk` for additional DeFi features
 - Real-time data fetching and position monitoring
 - Automated rebalancing algorithms
-
-## 🚀 Live Demo
-
-**Demo URL**: [https://your-demo-url.com](https://your-demo-url.com)
-
-**GitHub Repository**: [https://github.com/TokenHarvester/Saros-DLMM-management-dashboard]
 
 ## 💡 Key Features
 
