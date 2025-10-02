@@ -10,91 +10,100 @@ A portfolio management dashboard for Saros DLMM (Dynamic Liquidity Market Maker)
 
 ## 🏆 Features
 
-### Multi-Feature Application
-- **Portfolio Overview**: Real-time portfolio value tracking with performance charts
-- **Position Management**: Detailed view of all DLMM positions with health monitoring
-- **Automated Rebalancing**: AI-powered recommendations for optimal liquidity placement
-- **Strategy Simulator**: Backtesting tools for different liquidity provision strategies
-- **Advanced Analytics**: Risk analysis, impermanent loss tracking, and performance metrics
+### Portfolio Overview
 
-### Saros SDK Integration
-- Primary integration with `@saros-finance/dlmm-sdk` for DLMM operations
-- Secondary integration with `@saros-finance/sdk` for additional DeFi features
-- Real-time data fetching and position monitoring
-- Automated rebalancing algorithms
+- Real-time portfolio value display
+- Position health monitoring
+- Fee tracking and APY calculations
+- Performance metrics dashboard
 
-## 💡 Key Features
+### Position Management
 
-### 1. Portfolio Management
-- **Real-time Portfolio Tracking**: Monitor total value, daily fees, and APY across all positions
-- **Multi-Pool Support**: Manage multiple DLMM pools (SOL/USDC, SAROS/SOL, RAY/USDC, etc.)
-- **Performance Analytics**: Historical performance tracking with interactive charts
-- **Health Monitoring**: Position health indicators with risk assessment
+- Detailed view of all DLMM positions
+- Bin range visualization
+- Liquidity distribution analysis
+- Position health indicators
 
-### 2. Intelligent Rebalancing
-- **Automated Recommendations**: AI-powered suggestions for optimal bin placement
-- **Risk Assessment**: Real-time evaluation of impermanent loss and price range risks
-- **One-Click Execution**: Easy implementation of rebalancing strategies
-- **Custom Strategies**: Support for different liquidity provision approaches
+### Rebalancing Recommendations
 
-### 3. Advanced Analytics
-- **Fee Distribution Analysis**: Breakdown of fee generation across different pools
-- **Risk Metrics**: Impermanent loss tracking, price range optimization
-- **Portfolio Health Score**: Comprehensive scoring system for position quality
-- **Strategy Simulation**: Backtesting tools for different market scenarios
+- Automated analysis of position status
+- Actionable recommendations for optimization
+- Risk assessment for out-of-range positions
+- Expected impact calculations
 
-### 4. User Experience
-- **Intuitive Interface**: Clean, modern design optimized for traders and LPs
-- **Real-time Updates**: Live data feeds with refresh capabilities
-- **Mobile Responsive**: Full functionality across all device sizes
-- **Dark Mode Support**: Professional trading interface aesthetics
+### Strategy Simulation
+
+- Compare different liquidity provision strategies
+- Risk/reward analysis
+- Capital efficiency calculations
 
 ## 🛠 Technical Implementation
 
-### Saros SDK Usage Examples
+### Architecture
 
-#### 1. Fetching DLMM Positions
-```typescript
-import { DLMM } from '@saros-finance/dlmm-sdk';
+- **Frontend:** React with TypeScript
+- **State Management:** React Hooks
+- **Styling:** CSS with responsive design
+- **Wallet Integration:** Solana wallet adapters
+- **Data Layer:** Service-based architecture
 
-const fetchPositions = async () => {
-  const dlmm = new DLMM(connection, wallet);
-  const positions = await dlmm.getUserPositions();
-  return positions.map(position => ({
-    pair: position.pair,
-    liquidity: position.totalLiquidity,
-    fees: position.accumulatedFees,
-    bins: position.binDistribution
-  }));
-};
+### Data Source Implementation
+Currently uses mock data for demonstration purposes due to API/SDK limitations discovered during development:
+
+#### API Research:
+
+- Investigated REST API endpoints (/api/bin-position, /api/pool-position)
+- Found https://api.saros.xyz base URL returns 404 for user position endpoints
+- Team provided pool-level endpoint: https://api.saros.xyz/api/dex-v3/pool/91DFpQkaS7rSLyru9an5Pt8pff3WVKyiRBxEa2CBuuT4/bin?binArrayIndex[]=32775
+- This requires knowing pool addresses beforehand, not suitable for user portfolio discovery
+
+#### SDK Exploration:
+
+- Installed @saros-finance/dlmm-sdk
+- Available exports: LiquidityBookServices, findPosition, getMaxPosition
+- No clear user-level position query methods documented
+- Methods appear to require pool addresses as input parameters
+
+#### Current Approach:
+Mock data implementation allows full feature demonstration while awaiting:
+
+- Complete SDK documentation with user position query examples
+- REST API endpoints for user position discovery
+- Team guidance on recommended implementation approach
+
+## Code Structure
+```
+src/
+├── components/
+│   └── SarosDLMMDashboard.tsx    # Main dashboard component
+├── services/
+│   ├── sarosApiService.ts         # Service layer with mock data
+│   ├── walletService.ts           # Wallet connection handling
+│   └── sarosSdkService.ts         # SDK integration attempt
+├── types/
+│   └── index.ts                   # TypeScript type definitions
+├── App.tsx                        # Main application component
+└── App.css                        # Styling
 ```
 
-#### 2. Automated Rebalancing
-```typescript
-const rebalancePosition = async (positionId: string, strategy: RebalanceStrategy) => {
-  const position = await dlmm.getPosition(positionId);
-  const currentPrice = await dlmm.getCurrentPrice(position.pair);
-  
-  const optimalRange = calculateOptimalRange(currentPrice, strategy);
-  const rebalanceParams = generateRebalanceParams(position, optimalRange);
-  
-  return await dlmm.rebalance(positionId, rebalanceParams);
-};
-```
+## Mock Data Structure
 
-#### 3. Fee Calculation and Analytics
-```typescript
-const calculateMetrics = async (positions: Position[]) => {
-  const metrics = await Promise.all(positions.map(async (position) => {
-    const fees24h = await dlmm.getFeesGenerated(position.id, '24h');
-    const apy = await dlmm.calculateAPY(position.id);
-    const impermanentLoss = await dlmm.calculateImpermanentLoss(position.id);
-    
-    return { position, fees24h, apy, impermanentLoss };
-  }));
-  
-  return aggregateMetrics(metrics);
-};
+The application demonstrates realistic data structures matching Saros DLMM format:
+```
+interface Position {
+  id: string;
+  pairName: string;
+  tokenX: string;
+  tokenY: string;
+  lowerBinId: number;
+  upperBinId: number;
+  currentValue: number;
+  apr: number;
+  unclaimedFees: number;
+  pnl: number;
+  binDistribution: BinDistribution[];
+  health: 'Excellent' | 'Good' | 'Fair' | 'Poor';
+}
 ```
 
 ## 🏗 Installation & Setup
@@ -118,17 +127,17 @@ npm install @saros-finance/dlmm-sdk @saros-finance/sdk
 
 # Set up environment variables
 cp .env.example .env
-# Edit .env with your configuration
 
 # Start development server
-npm run dev
+npm start
 ```
 
 ### Environment Configuration
-```env
+Create .env file:
+```
 REACT_APP_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-REACT_APP_SAROS_API_KEY=your_api_key_here
-REACT_APP_ENABLE_ANALYTICS=true
+REACT_APP_SAROS_API_URL=https://api.saros.xyz
+REACT_APP_USE_MOCK_DATA=true
 ```
 
 ### Production Deployment
@@ -140,36 +149,80 @@ npm run build
 npm run deploy
 ```
 
-## 🧪 Testing & Quality Assurance
+## 🎯 Production Implementation Path
+### For Real Data Integration
+Once proper Saros SDK documentation or API endpoints are available:
 
-### Test Coverage
-- Unit tests for SDK integration functions
-- Integration tests for portfolio calculations
-- E2E tests for user workflows
-- Performance tests for real-time data updates
-
-### Quality Standards Met
-- ✅ Clean, production-ready code with comprehensive error handling
-- ✅ TypeScript for type safety and better developer experience
-- ✅ Comprehensive documentation and inline comments
-- ✅ Mobile-responsive design with intuitive UX
-- ✅ Real-time data updates with proper loading states
-- ✅ Proper error boundaries and user feedback
-
-### Testing Commands
-```bash
-# Run unit tests
-npm run test
-
-# Run integration tests
-npm run test:integration
-
-# Run E2E tests
-npm run test:e2e
-
-# Generate coverage report
-npm run test:coverage
+### Option 1: SDK Integration
 ```
+import { LiquidityBookServices } from '@saros-finance/dlmm-sdk';
+
+const fetchUserPositions = async (publicKey: PublicKey) => {
+  const sdk = new LiquidityBookServices();
+  // Awaiting documented method for user position queries
+  const positions = await sdk.getUserPositions(publicKey);
+  return positions;
+};
+```
+
+### Option 2: REST API
+```
+const fetchUserPositions = async (userId: string) => {
+  // When endpoint becomes available
+  const response = await fetch(
+    `${API_URL}/api/users/${userId}/positions`
+  );
+  return response.json();
+};
+```
+
+### Option 3: On-chain RPC Queries
+```
+const fetchUserPositions = async (publicKey: PublicKey) => {
+  // Query Solana blockchain directly for position accounts
+  const accounts = await connection.getProgramAccounts(
+    DLMM_PROGRAM_ID,
+    {
+      filters: [
+        { dataSize: POSITION_ACCOUNT_SIZE },
+        { memcmp: { offset: 8, bytes: publicKey.toBase58() }}
+      ]
+    }
+  );
+  return parsePositionAccounts(accounts);
+};
+```
+
+All UI components are production-ready and will work seamlessly once data integration is completed.
+
+## 🔧 Features Implementation
+### Portfolio Overview Dashboard
+
+- Total portfolio value
+- Profit/Loss tracking
+- Active positions count
+- Average APR calculation
+
+### Position Details
+
+- Token pair information
+- Liquidity range (bin IDs)
+- Current value and fees earned
+- Position health status
+- Bin distribution visualization
+
+### Rebalancing System
+
+- Out-of-range detection
+- High fees compound suggestions
+- Loss position exit recommendations
+- Expected impact calculations
+
+### Analytics
+
+- 30-day performance history
+- Fee generation tracking
+- Impermanent loss estimates
 
 ## 📈 Real-World Applications
 
@@ -227,30 +280,16 @@ This demo is designed to be hackathon-ready and easily extensible:
 - **Portfolio Tracking**: Integration with Zapper, DeBank
 - **Tax Reporting**: Export for tax calculation tools
 
-## 🔐 Security Considerations
+## 📚 Documentation
+### For Developers
+#### Integrating Real Data:
 
-- **Wallet Integration**: Secure connection with popular Solana wallets
-- **Transaction Safety**: Comprehensive validation before executing trades
-- **Data Privacy**: No sensitive data stored on external servers
-- **Error Handling**: Graceful degradation and user-friendly error messages
+1. Update `src/services/sarosApiService.ts`
+2. Replace `getMockPortfolioData()` with actual API/SDK calls
+3. Set `REACT_APP_USE_MOCK_DATA=false`
+4. All components will work without modification
 
-## 📚 Documentation & Resources
-
-### API Documentation
-Complete documentation for all integrated Saros SDK functions with examples and best practices.
-
-### User Guide
-Step-by-step tutorials for:
-- Setting up your first DLMM position
-- Understanding rebalancing recommendations
-- Interpreting analytics and risk metrics
-- Optimizing fee generation
-
-### Developer Resources
-- SDK integration patterns
-- Component architecture
-- State management best practices
-- Performance optimization techniques
+**Note:** This is a demonstration application built with mock data. All features and UI components are production-ready and designed for easy integration with real Saros DLMM data once proper SDK documentation or API endpoints become available.
 
 ## 🤝 Contributing
 
